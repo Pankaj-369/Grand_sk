@@ -115,7 +115,7 @@ const Contact = () => {
               </div>
 
               {/* Interactive Map */}
-              <div className="mt-8 h-64 rounded-lg overflow-hidden shadow-lg">
+              <div className="mt-8 h-74 rounded-lg overflow-hidden shadow-lg">
                 <MapContainer 
                   center={[28.5855, 77.1642]} // Satya Niketan, Delhi
                   zoom={15} 
