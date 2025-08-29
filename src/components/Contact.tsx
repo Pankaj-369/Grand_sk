@@ -122,14 +122,11 @@ const Contact = () => {
                   style={{ height: '100%', width: '100%' }}
                   scrollWheelZoom={false}
                 >
-              <TileLayer
-  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://www.maptiler.com/">MapTiler</a>'
-  url={`https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}.png?key=N6DyApA3NciVe9cOKwMP`}
-  tileSize={512}
-  zoomOffset={-1}
+             <TileLayer
+  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
+  url="https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+  subdomains={['a','b','c','d']}
 />
-
-
 
 
                   <Marker position={[28.5855, 77.1642]} icon={markerIcon}>
