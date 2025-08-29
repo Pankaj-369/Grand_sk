@@ -10,22 +10,6 @@
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
     line-height: 1.6;
-    background-color: #fafafa; /* subtle background for readability */
-  }
-
-  h1, h2, h3, h4 {
-    @apply font-bold text-gray-900;
-  }
-
-  /* Responsive typography */
-  h1 {
-    @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl;
-  }
-  h2 {
-    @apply text-xl sm:text-2xl md:text-3xl;
-  }
-  p {
-    @apply text-base sm:text-lg;
   }
 }
 
@@ -85,7 +69,6 @@ section {
 .nav-item {
   position: relative;
   overflow: hidden;
-  @apply px-2 py-1 text-sm sm:text-base md:text-lg;
 }
 
 .nav-item::before {
@@ -95,7 +78,7 @@ section {
   left: 0;
   width: 0;
   height: 2px;
-  background-color: #d97706; /* amber-600 */
+  background-color: #d97706;
   transition: width 0.3s ease;
 }
 
@@ -118,32 +101,4 @@ section {
   opacity: 1;
   transform: translateY(0);
   transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-/* Responsive Nav Enhancements */
-@media (max-width: 640px) { /* Mobile */
-  nav {
-    @apply flex flex-col space-y-3;
-  }
-  .nav-item {
-    @apply text-base py-3 px-4 rounded-lg;
-  }
-}
-
-@media (min-width: 641px) and (max-width: 1024px) { /* Tablets */
-  nav {
-    @apply flex space-x-6;
-  }
-  .nav-item {
-    @apply text-lg;
-  }
-}
-
-@media (min-width: 1025px) { /* Desktops */
-  nav {
-    @apply flex space-x-8;
-  }
-  .nav-item {
-    @apply text-lg font-medium;
-  }
 }
