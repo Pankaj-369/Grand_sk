@@ -115,7 +115,7 @@ const Contact = () => {
               </div>
 
               {/* Interactive Map */}
-              <div className="mt-8 h-74 rounded-lg overflow-hidden shadow-lg">
+              <div className="mt-8 h-80 rounded-lg overflow-hidden shadow-lg">
                 <MapContainer 
                   center={[28.5855, 77.1642]} // Satya Niketan, Delhi
                   zoom={15} 
@@ -123,9 +123,9 @@ const Contact = () => {
                   scrollWheelZoom={false}
                 >
                   <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
+    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
+    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+  />
                   <Marker position={[28.5855, 77.1642]} icon={markerIcon}>
                     <Popup>
                       📍 The Grand SK <br /> Satya Niketan, Delhi
