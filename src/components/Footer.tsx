@@ -51,13 +51,15 @@ const Footer = () => {
                 <div className="flex items-center space-x-3">
                   <Phone className="w-5 h-5 text-amber-400" />
                   <div>
+                    <p className="text-gray-300">+91 +91 8587885015</p>
+                    <p className="text-sm text-gray-400">Nitesh Chhabra</p>
                     <p className="text-gray-300">+91 8700560190</p>
                     <p className="text-sm text-gray-400">Vishal Hasija</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="w-5 h-5 text-amber-400" />
-                  <p className="text-gray-300">contact@grandsk.com</p>
+                  <p className="text-gray-300">niteshchhabra2001@gmail.com</p>
                 </div>
               </div>
             </div>
@@ -69,17 +71,11 @@ const Footer = () => {
                 <div className="flex items-center space-x-3">
                   <Clock className="w-5 h-5 text-amber-400" />
                   <div>
-                    <p className="text-gray-300">Mon - Thu</p>
-                    <p className="text-sm text-gray-400">7:00 AM - 10:00 PM</p>
+                    <p className="text-gray-300">Everyday:</p>
+                    <p className="text-sm text-gray-400">11:00 AM - 12:00 PM</p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <Clock className="w-5 h-5 text-amber-400" />
-                  <div>
-                    <p className="text-gray-300">Fri - Sun</p>
-                    <p className="text-sm text-gray-400">7:00 AM - 11:00 PM</p>
-                  </div>
-                </div>
+               
               </div>
               
               <div className="mt-6 p-4 bg-gray-800 rounded-lg">
