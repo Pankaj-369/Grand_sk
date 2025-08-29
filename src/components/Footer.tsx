@@ -72,7 +72,7 @@ const Footer = () => {
                   <Clock className="w-5 h-5 text-amber-400" />
                   <div>
                     <p className="text-gray-300">Everyday:</p>
-                    <p className="text-sm text-gray-400">11:00 AM - 12:00 PM</p>
+                    <p className="text-sm text-gray-400">11:00 AM - 12:00 AM</p>
                   </div>
                 </div>
                

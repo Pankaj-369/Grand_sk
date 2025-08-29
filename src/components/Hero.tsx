@@ -61,7 +61,7 @@ const Hero = () => {
         <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center text-sm sm:text-base">
           <div className="flex items-center space-x-2">
             <Clock className="w-5 h-5 text-amber-400" />
-            <span>Open 11 AM - 12 PM</span>
+            <span>Open 11 AM - 12 AM</span>
           </div>
           <div className="flex items-center space-x-2">
             <MapPin className="w-5 h-5 text-amber-400" />
