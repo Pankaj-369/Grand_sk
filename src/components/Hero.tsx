@@ -28,7 +28,7 @@ const Hero = () => {
           The Grand <span className="text-amber-400">SK</span>
         </h1>
         <h2 className="text-2xl md:text-3xl font-light mb-8 text-amber-100">
-          Vibes hotter than your coffee ☕🔥
+          Vibes hotter than your coffee 
         </h2>
         <p className="text-lg md:text-xl mb-12 leading-relaxed max-w-2xl mx-auto text-gray-200">
           Experience the perfect blend of sophisticated dining and relaxed lounge atmosphere. 

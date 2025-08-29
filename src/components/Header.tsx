@@ -19,7 +19,7 @@ const Header = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-800">The Grand SK</h1>
-              <p className="text-sm text-amber-600 font-medium">Vibes hotter than your coffee ☕🔥</p>
+              <p className="text-sm text-amber-600 font-medium">Vibes hotter than your coffee</p>
             </div>
           </div>
 
@@ -71,11 +71,11 @@ const Header = () => {
           <div className="hidden lg:flex items-center space-x-4">
             <div className="flex items-center space-x-1 text-sm text-gray-600">
               <Phone className="w-4 h-4" />
-              <span>+91 8700560190</span>
+              <span>+91 8587885015</span>
             </div>
             <div className="flex items-center space-x-1 text-sm text-gray-600">
               <MapPin className="w-4 h-4" />
-              <span>South Campus</span>
+              <span>Satya Niketan</span>
             </div>
           </div>
 
