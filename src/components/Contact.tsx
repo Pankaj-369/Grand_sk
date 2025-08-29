@@ -123,9 +123,12 @@ const Contact = () => {
                   scrollWheelZoom={false}
                 >
                   <TileLayer
-    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
-    url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-  />
+  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://www.maptiler.com/">MapTiler</a>'
+  url={`https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=N6DyApA3NciVe9cOKwMP`}
+  tileSize={512}
+  zoomOffset={-1}
+/>
+
                   <Marker position={[28.5855, 77.1642]} icon={markerIcon}>
                     <Popup>
                       📍 The Grand SK <br /> Satya Niketan, Delhi
