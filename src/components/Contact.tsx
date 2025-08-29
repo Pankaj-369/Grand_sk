@@ -117,7 +117,7 @@ const Contact = () => {
               {/* Interactive Map */}
               <div className="mt-8 h-64 rounded-lg overflow-hidden shadow-lg">
                 <MapContainer 
-                  center={[28.5855, 77.1642]} // Approx coords for Satya Niketan, Delhi
+                  center={[28.5855, 77.1642]} // Satya Niketan, Delhi
                   zoom={15} 
                   style={{ height: '100%', width: '100%' }}
                   scrollWheelZoom={false}
@@ -135,13 +135,141 @@ const Contact = () => {
               </div>
             </div>
 
-            {/* Reservation Form (unchanged) */}
+            {/* Reservation Form */}
             <div className="bg-gray-50 p-8 rounded-lg">
               <h3 className="text-2xl font-semibold text-gray-800 mb-8">Make a Reservation</h3>
               
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Inputs remain same */}
-                ...
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={reservation.name}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-colors"
+                    placeholder="Enter your full name"
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={reservation.email}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-colors"
+                      placeholder="your@email.com"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      name="phone"
+                      value={reservation.phone}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-colors"
+                      placeholder="+91 XXXXX XXXXX"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
+                      Date
+                    </label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <input
+                        type="date"
+                        id="date"
+                        name="date"
+                        value={reservation.date}
+                        onChange={handleChange}
+                        required
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-colors"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-2">
+                      Time
+                    </label>
+                    <select
+                      id="time"
+                      name="time"
+                      value={reservation.time}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-colors"
+                    >
+                      <option value="">Select Time</option>
+                      <option value="7:00">7:00 AM</option>
+                      <option value="8:00">8:00 AM</option>
+                      <option value="9:00">9:00 AM</option>
+                      <option value="10:00">10:00 AM</option>
+                      <option value="11:00">11:00 AM</option>
+                      <option value="12:00">12:00 PM</option>
+                      <option value="13:00">1:00 PM</option>
+                      <option value="14:00">2:00 PM</option>
+                      <option value="15:00">3:00 PM</option>
+                      <option value="16:00">4:00 PM</option>
+                      <option value="17:00">5:00 PM</option>
+                      <option value="18:00">6:00 PM</option>
+                      <option value="19:00">7:00 PM</option>
+                      <option value="20:00">8:00 PM</option>
+                      <option value="21:00">9:00 PM</option>
+                      <option value="22:00">10:00 PM</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="guests" className="block text-sm font-medium text-gray-700 mb-2">
+                      Guests
+                    </label>
+                    <div className="relative">
+                      <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                      <select
+                        id="guests"
+                        name="guests"
+                        value={reservation.guests}
+                        onChange={handleChange}
+                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-colors"
+                      >
+                        <option value="1">1 Guest</option>
+                        <option value="2">2 Guests</option>
+                        <option value="3">3 Guests</option>
+                        <option value="4">4 Guests</option>
+                        <option value="5">5 Guests</option>
+                        <option value="6">6 Guests</option>
+                        <option value="7">7 Guests</option>
+                        <option value="8">8 Guests</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full bg-amber-600 hover:bg-amber-700 text-white py-4 px-6 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+                >
+                  Reserve Your Table
+                </button>
               </form>
 
               <p className="text-sm text-gray-500 mt-4 text-center">
