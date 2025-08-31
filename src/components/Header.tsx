@@ -82,7 +82,7 @@ const Header = () => {
           <div className="hidden xl:flex items-center space-x-6">
             <div className="flex items-center space-x-2 text-sm text-gray-600 hover:text-amber-600 transition-colors duration-300">
               <Phone className="w-4 h-4" />
-              <span className="font-medium">+91 8700560190</span>
+              <span className="font-medium">+91 8587885015</span>
             </div>
             <div className="flex items-center space-x-2 text-sm text-gray-600 hover:text-amber-600 transition-colors duration-300">
               <MapPin className="w-4 h-4" />
