@@ -452,7 +452,6 @@ const Contact = () => {
                   {isSubmitting ? 'Processing...' : 'Reserve Your Table'}
                 </button>
               </form>
-
              
 
               <p className="text-sm text-gray-500 mt-4 text-center">
