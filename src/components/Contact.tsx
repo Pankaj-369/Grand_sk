@@ -55,8 +55,8 @@ const Contact = () => {
   };
 
   const sendEmails = async (reservationData: ReservationData) => {
-    // Initialize EmailJS (you'll need to replace these with actual values)
-    emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your EmailJS public key
+    // Initialize EmailJS with your public key
+    emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your actual EmailJS public key
 
     const templateParams = {
       customer_name: reservationData.name,
@@ -74,15 +74,15 @@ const Contact = () => {
     try {
       // Send confirmation email to customer
       await emailjs.send(
-        "YOUR_SERVICE_ID", // Replace with your EmailJS service ID
-        "customer_confirmation", // Replace with your customer template ID
+        "YOUR_SERVICE_ID", // Replace with your actual service ID
+        "YOUR_CUSTOMER_TEMPLATE_ID", // Replace with your customer template ID
         templateParams
       );
 
       // Send notification email to owner
       await emailjs.send(
-        "YOUR_SERVICE_ID", // Replace with your EmailJS service ID
-        "owner_notification", // Replace with your owner template ID
+        "YOUR_SERVICE_ID", // Replace with your actual service ID  
+        "YOUR_OWNER_TEMPLATE_ID", // Replace with your owner template ID
         templateParams
       );
 
@@ -101,8 +101,12 @@ const Contact = () => {
       // Store reservation data for confirmation display
       setSubmittedReservation(reservation);
       
-      // Send emails (in a real implementation, you'd configure EmailJS)
-      // await sendEmails(reservation);
+      // Send confirmation emails
+      const emailSuccess = await sendEmails(reservation);
+      
+      if (!emailSuccess) {
+        alert('Reservation confirmed! However, there was an issue sending confirmation emails. We will contact you directly.');
+      }
       
       // Show confirmation screen
       setShowConfirmation(true);
