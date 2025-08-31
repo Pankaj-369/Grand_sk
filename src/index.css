@@ -68,21 +68,61 @@ section {
 /* Enhanced navigation styles */
 .nav-item {
   position: relative;
-  overflow: hidden;
 }
 
 .nav-item::before {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 0;
-  height: 2px;
-  background-color: #d97706;
-  transition: width 0.3s ease;
+  height: 3px;
+  background: linear-gradient(90deg, #d97706, #f59e0b);
+  border-radius: 2px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .nav-item:hover::before {
+  width: 80%;
+}
+
+/* Enhanced logo animations */
+@keyframes logoGlow {
+  0%, 100% { box-shadow: 0 4px 15px rgba(217, 119, 6, 0.3); }
+  50% { box-shadow: 0 6px 25px rgba(217, 119, 6, 0.5); }
+}
+
+.logo-glow {
+  animation: logoGlow 3s ease-in-out infinite;
+}
+
+/* Backdrop blur support */
+@supports (backdrop-filter: blur(12px)) {
+  .backdrop-blur-md {
+    backdrop-filter: blur(12px);
+  }
+}
+
+/* Enhanced mobile menu */
+.mobile-menu-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.mobile-menu-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(135deg, #fef3c7, #fde68a);
+  transition: width 0.3s ease;
+  z-index: -1;
+}
+
+.mobile-menu-item:hover::before {
   width: 100%;
 }
 
