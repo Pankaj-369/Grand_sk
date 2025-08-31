@@ -56,7 +56,7 @@ const Contact = () => {
 
   const sendEmails = async (reservationData: ReservationData) => {
     // Initialize EmailJS with your public key
-    emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your actual EmailJS public key
+    emailjs.init("Sz7xPDCXEe7Id9he3"); // Replace with your actual EmailJS public key
 
     const templateParams = {
       customer_name: reservationData.name,
@@ -74,15 +74,15 @@ const Contact = () => {
     try {
       // Send confirmation email to customer
       await emailjs.send(
-        "YOUR_SERVICE_ID", // Replace with your actual service ID
-        "YOUR_CUSTOMER_TEMPLATE_ID", // Replace with your customer template ID
+        "service_aa5kxxe", // Replace with your actual service ID
+        "template_pilbgzh", // Replace with your customer template ID
         templateParams
       );
 
       // Send notification email to owner
       await emailjs.send(
-        "YOUR_SERVICE_ID", // Replace with your actual service ID  
-        "YOUR_OWNER_TEMPLATE_ID", // Replace with your owner template ID
+        "service_aa5kxxe", // Replace with your actual service ID  
+        "template_91b09db", // Replace with your owner template ID
         templateParams
       );
 
