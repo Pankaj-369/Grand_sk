@@ -453,11 +453,7 @@ const Contact = () => {
                 </button>
               </form>
 
-              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-800">
-                  <strong>📧 Email Setup Required:</strong> To enable automatic email confirmations, please configure EmailJS with your service credentials. For now, we'll show confirmation on screen and you can manually follow up with customers.
-                </p>
-              </div>
+             
 
               <p className="text-sm text-gray-500 mt-4 text-center">
                 For large groups (8+) or special events, please call us directly at +91 8700560190
