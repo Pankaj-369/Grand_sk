@@ -75,14 +75,14 @@ const Contact = () => {
       // Send confirmation email to customer
       await emailjs.send(
         "service_aa5kxxe", // Replace with your actual service ID
-        "template_pilbgzh", // Replace with your customer template ID
+        "template_91b09db", // Replace with your customer template ID
         templateParams
       );
 
       // Send notification email to owner
       await emailjs.send(
         "service_aa5kxxe", // Replace with your actual service ID  
-        "template_91b09db", // Replace with your owner template ID
+        "template_pilbgzh", // Replace with your owner template ID
         templateParams
       );
 
