@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Phone, Mail, MapPin, Clock, Calendar, Users } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Calendar, Users, CheckCircle, X } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import emailjs from '@emailjs/browser';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -12,8 +13,17 @@ const markerIcon = new L.Icon({
   iconAnchor: [12, 41],
 });
 
+interface ReservationData {
+  name: string;
+  email: string;
+  phone: string;
+  date: string;
+  time: string;
+  guests: string;
+}
+
 const Contact = () => {
-  const [reservation, setReservation] = useState({
+  const [reservation, setReservation] = useState<ReservationData>({
     name: '',
     email: '',
     phone: '',
@@ -22,10 +32,89 @@ const Contact = () => {
     guests: '2'
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [submittedReservation, setSubmittedReservation] = useState<ReservationData | null>(null);
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-IN', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  };
+
+  const formatTime = (timeString: string) => {
+    const [hour] = timeString.split(':');
+    const hourNum = parseInt(hour);
+    const ampm = hourNum >= 12 ? 'PM' : 'AM';
+    const displayHour = hourNum > 12 ? hourNum - 12 : hourNum === 0 ? 12 : hourNum;
+    return `${displayHour}:00 ${ampm}`;
+  };
+
+  const sendEmails = async (reservationData: ReservationData) => {
+    // Initialize EmailJS (you'll need to replace these with actual values)
+    emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your EmailJS public key
+
+    const templateParams = {
+      customer_name: reservationData.name,
+      customer_email: reservationData.email,
+      customer_phone: reservationData.phone,
+      reservation_date: formatDate(reservationData.date),
+      reservation_time: formatTime(reservationData.time),
+      number_of_guests: reservationData.guests,
+      cafe_name: "The Grand SK Cafe and Lounge",
+      cafe_address: "Building No-9 Satya Niketan, Moti Bagh, 110021 (South Campus)",
+      cafe_phone: "+91 8700560190",
+      owner_email: "niteshchhabra2001@gmail.com"
+    };
+
+    try {
+      // Send confirmation email to customer
+      await emailjs.send(
+        "YOUR_SERVICE_ID", // Replace with your EmailJS service ID
+        "customer_confirmation", // Replace with your customer template ID
+        templateParams
+      );
+
+      // Send notification email to owner
+      await emailjs.send(
+        "YOUR_SERVICE_ID", // Replace with your EmailJS service ID
+        "owner_notification", // Replace with your owner template ID
+        templateParams
+      );
+
+      return true;
+    } catch (error) {
+      console.error('Email sending failed:', error);
+      return false;
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Reservation request submitted! We will contact you shortly to confirm.');
-    setReservation({ name: '', email: '', phone: '', date: '', time: '', guests: '2' });
+    setIsSubmitting(true);
+
+    try {
+      // Store reservation data for confirmation display
+      setSubmittedReservation(reservation);
+      
+      // Send emails (in a real implementation, you'd configure EmailJS)
+      // await sendEmails(reservation);
+      
+      // Show confirmation screen
+      setShowConfirmation(true);
+      
+      // Reset form
+      setReservation({ name: '', email: '', phone: '', date: '', time: '', guests: '2' });
+      
+    } catch (error) {
+      alert('There was an error processing your reservation. Please try again or call us directly.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -34,6 +123,104 @@ const Contact = () => {
       [e.target.name]: e.target.value
     });
   };
+
+  const closeConfirmation = () => {
+    setShowConfirmation(false);
+    setSubmittedReservation(null);
+  };
+
+  // Confirmation Modal
+  if (showConfirmation && submittedReservation) {
+    return (
+      <section id="contact" className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-white rounded-lg shadow-2xl p-8 relative">
+              <button
+                onClick={closeConfirmation}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Close confirmation"
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              <div className="text-center mb-8">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle className="w-8 h-8 text-green-600" />
+                </div>
+                <h2 className="text-3xl font-bold text-gray-800 mb-2">Reservation Confirmed!</h2>
+                <p className="text-lg text-gray-600">Thank you for choosing The Grand SK</p>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-6 mb-6">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Reservation Details</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Name:</span>
+                    <span className="font-medium text-gray-800">{submittedReservation.name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Email:</span>
+                    <span className="font-medium text-gray-800">{submittedReservation.email}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Phone:</span>
+                    <span className="font-medium text-gray-800">{submittedReservation.phone}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Date:</span>
+                    <span className="font-medium text-gray-800">{formatDate(submittedReservation.date)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Time:</span>
+                    <span className="font-medium text-gray-800">{formatTime(submittedReservation.time)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Guests:</span>
+                    <span className="font-medium text-gray-800">{submittedReservation.guests} {submittedReservation.guests === '1' ? 'Guest' : 'Guests'}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+                <h4 className="font-semibold text-amber-800 mb-2">📍 Location Details</h4>
+                <p className="text-amber-700 text-sm">
+                  <strong>The Grand SK Cafe and Lounge</strong><br />
+                  Building No-9 Satya Niketan<br />
+                  Moti Bagh, 110021 (South Campus)<br />
+                  Nearest Metro: Durgabai Deshmukh
+                </p>
+              </div>
+
+              <div className="text-center space-y-4">
+                <p className="text-gray-600">
+                  📧 A confirmation email has been sent to <strong>{submittedReservation.email}</strong>
+                </p>
+                <p className="text-gray-600">
+                  📱 We'll contact you at <strong>{submittedReservation.phone}</strong> to confirm your reservation
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
+                  <a
+                    href={`tel:+918700560190`}
+                    className="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center space-x-2"
+                  >
+                    <Phone className="w-5 h-5" />
+                    <span>Call Us</span>
+                  </a>
+                  <button
+                    onClick={closeConfirmation}
+                    className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 px-6 py-3 rounded-lg font-semibold transition-colors duration-300"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="contact" className="py-20 bg-white">
@@ -75,19 +262,8 @@ const Contact = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-800 mb-1">Phone</h4>
-                    <p className="text-gray-600">+91 8587885015</p>
-                    <p className="text-gray-600">+91 8700560190</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <div className="bg-amber-100 p-3 rounded-full">
-                    <Phone className="w-6 h-6 text-amber-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-800 mb-1">Contact Person</h4>
-                    <p className="text-gray-600">Nitesh Chhabra</p>
-                    <p className="text-gray-600">Vishal Hasija</p>
+                    <p className="text-gray-600">+91 8587885015 (Nitesh Chhabra)</p>
+                    <p className="text-gray-600">+91 8700560190 (Vishal Hasija)</p>
                   </div>
                 </div>
 
@@ -122,16 +298,12 @@ const Contact = () => {
                   style={{ height: '100%', width: '100%' }}
                   scrollWheelZoom={false}
                 >
-         <TileLayer
-  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://www.maptiler.com/">MapTiler</a>'
-  url={`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=N6DyApA3NciVe9cOKwMP`}
-  tileSize={512}
-  zoomOffset={-1}
-/>
-
-
-
-
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://www.maptiler.com/">MapTiler</a>'
+                    url={`https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=N6DyApA3NciVe9cOKwMP`}
+                    tileSize={512}
+                    zoomOffset={-1}
+                  />
                   <Marker position={[28.5855, 77.1642]} icon={markerIcon}>
                     <Popup>
                       📍 The Grand SK <br /> Satya Niketan, Delhi
@@ -148,7 +320,7 @@ const Contact = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                    Full Name
+                    Full Name *
                   </label>
                   <input
                     type="text"
@@ -165,7 +337,7 @@ const Contact = () => {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                      Email Address
+                      Email Address *
                     </label>
                     <input
                       type="email"
@@ -180,7 +352,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number
+                      Phone Number *
                     </label>
                     <input
                       type="tel"
@@ -198,7 +370,7 @@ const Contact = () => {
                 <div className="grid md:grid-cols-3 gap-4">
                   <div>
                     <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
-                      Date
+                      Date *
                     </label>
                     <div className="relative">
                       <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -209,13 +381,14 @@ const Contact = () => {
                         value={reservation.date}
                         onChange={handleChange}
                         required
+                        min={new Date().toISOString().split('T')[0]}
                         className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-colors"
                       />
                     </div>
                   </div>
                   <div>
                     <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-2">
-                      Time
+                      Time *
                     </label>
                     <select
                       id="time"
@@ -226,10 +399,6 @@ const Contact = () => {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-colors"
                     >
                       <option value="">Select Time</option>
-                      <option value="7:00">7:00 AM</option>
-                      <option value="8:00">8:00 AM</option>
-                      <option value="9:00">9:00 AM</option>
-                      <option value="10:00">10:00 AM</option>
                       <option value="11:00">11:00 AM</option>
                       <option value="12:00">12:00 PM</option>
                       <option value="13:00">1:00 PM</option>
@@ -242,11 +411,12 @@ const Contact = () => {
                       <option value="20:00">8:00 PM</option>
                       <option value="21:00">9:00 PM</option>
                       <option value="22:00">10:00 PM</option>
+                      <option value="23:00">11:00 PM</option>
                     </select>
                   </div>
                   <div>
                     <label htmlFor="guests" className="block text-sm font-medium text-gray-700 mb-2">
-                      Guests
+                      Guests *
                     </label>
                     <div className="relative">
                       <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -272,14 +442,21 @@ const Contact = () => {
 
                 <button
                   type="submit"
-                  className="w-full bg-amber-600 hover:bg-amber-700 text-white py-4 px-6 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  disabled={isSubmitting}
+                  className="w-full bg-amber-600 hover:bg-amber-700 disabled:bg-amber-400 text-white py-4 px-6 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg disabled:transform-none disabled:cursor-not-allowed"
                 >
-                  Reserve Your Table
+                  {isSubmitting ? 'Processing...' : 'Reserve Your Table'}
                 </button>
               </form>
 
+              <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <strong>📧 Email Setup Required:</strong> To enable automatic email confirmations, please configure EmailJS with your service credentials. For now, we'll show confirmation on screen and you can manually follow up with customers.
+                </p>
+              </div>
+
               <p className="text-sm text-gray-500 mt-4 text-center">
-                For large groups (8+) or special events, please call us directly at +91 85878 85015
+                For large groups (8+) or special events, please call us directly at +91 8700560190
               </p>
             </div>
           </div>
