@@ -12,7 +12,8 @@ import {
   Search,
   Filter,
   Trash2,
-  Eye
+  Eye,
+  X
 } from 'lucide-react';
 
 interface Reservation {
@@ -408,7 +409,8 @@ const AdminDashboard = () => {
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
     </div>
   );
 };
