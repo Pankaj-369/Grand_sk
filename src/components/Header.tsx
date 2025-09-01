@@ -1,11 +1,33 @@
 import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, Phone, MapPin, Coffee } from 'lucide-react';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   const scrollToSection = (sectionId: string) => {
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+    if (location.pathname !== '/') {
+      navigate('/');
+      setTimeout(() => {
+        document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    } else {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+    }
+    setIsMenuOpen(false);
+  };
+
+  const navigateToAdmin = () => {
+    navigate('/admin');
+    setIsMenuOpen(false);
+  };
+
+  const navigateHome = () => {
+    navigate('/');
     setIsMenuOpen(false);
   };
 
@@ -14,7 +36,7 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between py-5">
           {/* Enhanced Logo */}
-          <div className="flex items-center space-x-3 group cursor-pointer" onClick={() => scrollToSection('hero')}>
+          <div className="flex items-center space-x-3 group cursor-pointer" onClick={navigateHome}>
             <div className="relative">
               <div className="w-12 h-12 bg-gradient-to-br from-amber-600 via-amber-700 to-amber-900 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-105">
                 <Coffee className="w-6 h-6 text-white" />
@@ -33,6 +55,8 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center space-x-1" role="navigation" aria-label="Main navigation">
+            {!isAdminRoute && (
+              <>
             <button 
               onClick={() => scrollToSection('hero')} 
               className="nav-item text-gray-700 hover:text-amber-700 transition-all duration-300 font-medium relative px-4 py-2 rounded-lg hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
@@ -68,14 +92,26 @@ const Header = () => {
             >
               Contact
             </button>
+              </>
+            )}
             
-            {/* CTA Button */}
+            {/* Admin Button */}
+            <button
+              onClick={navigateToAdmin}
+              className="ml-4 text-gray-600 hover:text-amber-700 px-4 py-2 rounded-lg hover:bg-amber-50 transition-all duration-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+            >
+              Admin
+            </button>
+            
+            {/* CTA Button - Only show on main site */}
+            {!isAdminRoute && (
             <button
               onClick={() => scrollToSection('contact')}
               className="ml-4 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
             >
               Reserve Table
             </button>
+            )}
           </nav>
 
           {/* Contact Info */}
@@ -105,6 +141,8 @@ const Header = () => {
         {isMenuOpen && (
           <div className="lg:hidden py-6 border-t border-gray-100 animate-fadeInUp bg-white/95 backdrop-blur-sm">
             <nav className="flex flex-col space-y-3" role="navigation" aria-label="Mobile navigation">
+              {!isAdminRoute && (
+                <>
               <button 
                 onClick={() => scrollToSection('hero')} 
                 className="text-left text-gray-700 hover:text-amber-700 hover:bg-amber-50 transition-all duration-300 font-medium py-4 px-6 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 border-l-4 border-transparent hover:border-amber-600"
@@ -140,8 +178,20 @@ const Header = () => {
               >
                 Contact
               </button>
+                </>
+              )}
+              
+              {/* Admin Link */}
+              <button 
+                onClick={navigateToAdmin} 
+                className="mobile-menu-item text-left text-gray-700 hover:text-amber-700 hover:bg-amber-50 transition-all duration-300 font-medium py-4 px-6 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 border-l-4 border-transparent hover:border-amber-600"
+                aria-label="Navigate to admin login"
+              >
+                Admin Login
+              </button>
               
               {/* Mobile CTA */}
+              {!isAdminRoute && (
               <div className="pt-4 mt-4 border-t border-gray-100">
                 <button
                   onClick={() => scrollToSection('contact')}
@@ -150,6 +200,7 @@ const Header = () => {
                   Reserve Your Table
                 </button>
               </div>
+              )}
             </nav>
             
             {/* Mobile Contact Info */}

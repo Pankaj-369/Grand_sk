@@ -36,6 +36,18 @@ const Contact = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [submittedReservation, setSubmittedReservation] = useState<ReservationData | null>(null);
 
+  // Save reservation to localStorage for admin dashboard
+  const saveReservation = (reservationData: ReservationData) => {
+    const reservations = JSON.parse(localStorage.getItem('cafeReservations') || '[]');
+    const newReservation = {
+      id: Date.now().toString(),
+      ...reservationData,
+      timestamp: new Date().toISOString()
+    };
+    reservations.push(newReservation);
+    localStorage.setItem('cafeReservations', JSON.stringify(reservations));
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-IN', { 
@@ -100,6 +112,9 @@ const Contact = () => {
     try {
       // Store reservation data for confirmation display
       setSubmittedReservation(reservation);
+      
+      // Save reservation to localStorage for admin dashboard
+      saveReservation(reservation);
       
       // Send confirmation emails
       const emailSuccess = await sendEmails(reservation);
