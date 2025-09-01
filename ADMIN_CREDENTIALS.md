@@ -5,6 +5,13 @@
 **Username:** `nitesh`  
 **Password:** `chhabra5173`
 
+## Supabase Admin Account
+
+**Email:** `niteshchhabra2001@gmail.com`  
+**Password:** `admin123456`
+
+*Note: This is the Supabase authentication account that powers the admin login system.*
+
 ## Access Instructions
 
 1. Navigate to `/admin` route on the website
@@ -13,19 +20,22 @@
 
 ## Admin Dashboard Features
 
-- **View All Reservations**: Complete list of customer bookings
+- **Real-time Data**: View all reservations stored in Supabase database
+- **Live Updates**: Data syncs across all devices and sessions
 - **Search & Filter**: Find specific reservations quickly
 - **Export Data**: Download reservation data as CSV
 - **Customer Details**: View complete reservation information
 - **Contact Customers**: Direct call functionality
 - **Delete Reservations**: Remove completed or cancelled bookings
+- **Secure Authentication**: Powered by Supabase Auth
 
 ## Security Notes
 
-- Credentials are stored securely in the application
-- Admin session expires when browser is closed
+- Authentication handled by Supabase (industry-standard security)
+- Admin sessions are secure and persistent
 - Only one admin account exists (no signup functionality)
-- All reservation data is stored locally in browser storage
+- All reservation data is stored securely in Supabase database
+- Real-time access from any device
 
 ## Contact Information
 

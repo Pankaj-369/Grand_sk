@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Coffee, Lock, User, Eye, EyeOff } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 const AdminLogin = () => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
@@ -17,11 +18,22 @@ const AdminLogin = () => {
     // Simulate loading for better UX
     await new Promise(resolve => setTimeout(resolve, 800));
 
-    if (credentials.username === 'nitesh' && credentials.password === 'chhabra5173') {
-      localStorage.setItem('adminAuth', 'true');
-      navigate('/admin/dashboard');
-    } else {
-      setError('Invalid credentials. Please check your username and password.');
+    try {
+      // Use Supabase authentication with admin credentials
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: 'niteshchhabra2001@gmail.com', // Admin email
+        password: credentials.username === 'nitesh' && credentials.password === 'chhabra5173' 
+          ? 'admin123456' // Secure admin password for Supabase
+          : 'invalid'
+      });
+
+      if (error || !data.user) {
+        setError('Invalid credentials. Please check your username and password.');
+      } else {
+        navigate('/admin/dashboard');
+      }
+    } catch (error) {
+      setError('Login failed. Please try again.');
     }
     setIsLoading(false);
   };

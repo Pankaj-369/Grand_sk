@@ -38,7 +38,7 @@ const Header = () => {
           {/* Enhanced Logo */}
           <div className="flex items-center space-x-3 group cursor-pointer" onClick={navigateHome}>
             <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-amber-600 via-amber-700 to-amber-900 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-105">
+              <div className="w-12 h-12 bg-gradient-to-br from-amber-600 via-amber-700 to-amber-900 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 transform group-hover:scale-105 logo-glow">
                 <Coffee className="w-6 h-6 text-white" />
               </div>
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-br from-yellow-400 to-amber-500 rounded-full opacity-80 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -98,7 +98,7 @@ const Header = () => {
             {/* Admin Button */}
             <button
               onClick={navigateToAdmin}
-              className="ml-4 text-gray-600 hover:text-amber-700 px-4 py-2 rounded-lg hover:bg-amber-50 transition-all duration-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+              className="ml-4 text-gray-600 hover:text-amber-700 px-4 py-2 rounded-lg hover:bg-amber-50 transition-all duration-300 font-medium focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 nav-item"
             >
               Admin
             </button>

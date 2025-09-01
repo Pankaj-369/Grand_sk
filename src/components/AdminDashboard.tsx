@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase, type CafeReservation } from '../lib/supabase';
 import { 
   LogOut, 
   Users, 
@@ -16,39 +17,57 @@ import {
   X
 } from 'lucide-react';
 
-interface Reservation {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  date: string;
-  time: string;
-  guests: string;
-  timestamp: string;
-}
-
 const AdminDashboard = () => {
-  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [reservations, setReservations] = useState<CafeReservation[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
+  const [selectedReservation, setSelectedReservation] = useState<CafeReservation | null>(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if admin is authenticated
-    if (!localStorage.getItem('adminAuth')) {
-      navigate('/admin');
-      return;
-    }
-
-    // Load reservations from localStorage
-    const savedReservations = localStorage.getItem('cafeReservations');
-    if (savedReservations) {
-      setReservations(JSON.parse(savedReservations));
-    }
+    checkAuthAndLoadData();
   }, [navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminAuth');
+  const checkAuthAndLoadData = async () => {
+    try {
+      // Check if user is authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        navigate('/admin');
+        return;
+      }
+
+      // Load reservations from Supabase
+      await loadReservations();
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      navigate('/admin');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadReservations = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('cafe_reservations')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error loading reservations:', error);
+        return;
+      }
+
+      setReservations(data || []);
+    } catch (error) {
+      console.error('Failed to load reservations:', error);
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     navigate('/admin');
   };
 
@@ -73,14 +92,29 @@ const AdminDashboard = () => {
   const filteredReservations = reservations.filter(reservation =>
     reservation.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     reservation.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    reservation.phone.includes(searchTerm)
+    (reservation.phone && reservation.phone.includes(searchTerm))
   );
 
-  const deleteReservation = (id: string) => {
-    const updatedReservations = reservations.filter(r => r.id !== id);
-    setReservations(updatedReservations);
-    localStorage.setItem('cafeReservations', JSON.stringify(updatedReservations));
-    setSelectedReservation(null);
+  const deleteReservation = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('cafe_reservations')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Error deleting reservation:', error);
+        alert('Failed to delete reservation. Please try again.');
+        return;
+      }
+
+      // Update local state
+      setReservations(reservations.filter(r => r.id !== id));
+      setSelectedReservation(null);
+    } catch (error) {
+      console.error('Failed to delete reservation:', error);
+      alert('Failed to delete reservation. Please try again.');
+    }
   };
 
   const exportReservations = () => {
@@ -89,11 +123,11 @@ const AdminDashboard = () => {
       ...reservations.map(r => [
         r.name,
         r.email,
-        r.phone,
-        formatDate(r.date),
-        formatTime(r.time),
-        r.guests,
-        new Date(r.timestamp).toLocaleString('en-IN')
+        r.phone || '',
+        formatDate(r.reservation_date),
+        formatTime(r.reservation_time),
+        r.guests.toString(),
+        new Date(r.created_at).toLocaleString('en-IN')
       ])
     ].map(row => row.join(',')).join('\n');
 
@@ -105,6 +139,17 @@ const AdminDashboard = () => {
     a.click();
     window.URL.revokeObjectURL(url);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 pt-24 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-amber-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -155,7 +200,7 @@ const AdminDashboard = () => {
                   <div>
                     <p className="text-sm text-gray-600">Today's Bookings</p>
                     <p className="text-2xl font-bold text-gray-800">
-                      {reservations.filter(r => r.date === new Date().toISOString().split('T')[0]).length}
+                      {reservations.filter(r => r.reservation_date === new Date().toISOString().split('T')[0]).length}
                     </p>
                   </div>
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
@@ -168,7 +213,7 @@ const AdminDashboard = () => {
                   <div>
                     <p className="text-sm text-gray-600">Total Guests</p>
                     <p className="text-2xl font-bold text-gray-800">
-                      {reservations.reduce((sum, r) => sum + parseInt(r.guests), 0)}
+                      {reservations.reduce((sum, r) => sum + r.guests, 0)}
                     </p>
                   </div>
                   <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
@@ -182,7 +227,7 @@ const AdminDashboard = () => {
                     <p className="text-sm text-gray-600">This Week</p>
                     <p className="text-2xl font-bold text-gray-800">
                       {reservations.filter(r => {
-                        const reservationDate = new Date(r.date);
+                        const reservationDate = new Date(r.reservation_date);
                         const today = new Date();
                         const weekFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
                         return reservationDate >= today && reservationDate <= weekFromNow;
@@ -255,22 +300,22 @@ const AdminDashboard = () => {
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center space-x-2">
                               <Phone className="w-4 h-4 text-gray-400" />
-                              <span className="text-sm text-gray-900">{reservation.phone}</span>
+                              <span className="text-sm text-gray-900">{reservation.phone || 'N/A'}</span>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div>
-                              <div className="text-sm font-medium text-gray-900">{formatDate(reservation.date)}</div>
-                              <div className="text-sm text-gray-500">{formatTime(reservation.time)}</div>
+                              <div className="text-sm font-medium text-gray-900">{formatDate(reservation.reservation_date)}</div>
+                              <div className="text-sm text-gray-500">{formatTime(reservation.reservation_time)}</div>
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                              {reservation.guests} {reservation.guests === '1' ? 'Guest' : 'Guests'}
+                              {reservation.guests} {reservation.guests === 1 ? 'Guest' : 'Guests'}
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {new Date(reservation.timestamp).toLocaleDateString('en-IN')}
+                            {new Date(reservation.created_at).toLocaleDateString('en-IN')}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div className="flex items-center space-x-2">
@@ -339,7 +384,7 @@ const AdminDashboard = () => {
                         <Phone className="w-5 h-5 text-gray-400" />
                         <div>
                           <p className="text-sm text-gray-500">Phone</p>
-                          <p className="font-medium text-gray-800">{selectedReservation.phone}</p>
+                          <p className="font-medium text-gray-800">{selectedReservation.phone || 'Not provided'}</p>
                         </div>
                       </div>
                     </div>
@@ -352,14 +397,14 @@ const AdminDashboard = () => {
                         <Calendar className="w-5 h-5 text-gray-400" />
                         <div>
                           <p className="text-sm text-gray-500">Date</p>
-                          <p className="font-medium text-gray-800">{formatDate(selectedReservation.date)}</p>
+                          <p className="font-medium text-gray-800">{formatDate(selectedReservation.reservation_date)}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
                         <Clock className="w-5 h-5 text-gray-400" />
                         <div>
                           <p className="text-sm text-gray-500">Time</p>
-                          <p className="font-medium text-gray-800">{formatTime(selectedReservation.time)}</p>
+                          <p className="font-medium text-gray-800">{formatTime(selectedReservation.reservation_time)}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
@@ -389,11 +434,11 @@ const AdminDashboard = () => {
 
                 <div className="mt-6 flex justify-between items-center">
                   <p className="text-sm text-gray-500">
-                    Submitted: {new Date(selectedReservation.timestamp).toLocaleString('en-IN')}
+                    Submitted: {new Date(selectedReservation.created_at).toLocaleString('en-IN')}
                   </p>
                   <div className="flex space-x-3">
                     <a
-                      href={`tel:${selectedReservation.phone}`}
+                      href={`tel:${selectedReservation.phone || ''}`}
                       className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center space-x-2"
                     >
                       <Phone className="w-4 h-4" />

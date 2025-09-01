@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Phone, Mail, MapPin, Clock, Calendar, Users, CheckCircle, X } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import emailjs from '@emailjs/browser';
+import { supabase } from '../lib/supabase';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -36,16 +37,34 @@ const Contact = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [submittedReservation, setSubmittedReservation] = useState<ReservationData | null>(null);
 
-  // Save reservation to localStorage for admin dashboard
-  const saveReservation = (reservationData: ReservationData) => {
-    const reservations = JSON.parse(localStorage.getItem('cafeReservations') || '[]');
-    const newReservation = {
-      id: Date.now().toString(),
-      ...reservationData,
-      timestamp: new Date().toISOString()
-    };
-    reservations.push(newReservation);
-    localStorage.setItem('cafeReservations', JSON.stringify(reservations));
+  // Save reservation to Supabase database
+  const saveReservation = async (reservationData: ReservationData) => {
+    try {
+      const { data, error } = await supabase
+        .from('cafe_reservations')
+        .insert([
+          {
+            name: reservationData.name,
+            email: reservationData.email,
+            phone: reservationData.phone,
+            reservation_date: reservationData.date,
+            reservation_time: reservationData.time,
+            guests: parseInt(reservationData.guests),
+            status: 'pending'
+          }
+        ])
+        .select();
+
+      if (error) {
+        console.error('Error saving reservation:', error);
+        throw error;
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Failed to save reservation:', error);
+      throw error;
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -113,8 +132,8 @@ const Contact = () => {
       // Store reservation data for confirmation display
       setSubmittedReservation(reservation);
       
-      // Save reservation to localStorage for admin dashboard
-      saveReservation(reservation);
+      // Save reservation to Supabase database
+      await saveReservation(reservation);
       
       // Send confirmation emails
       const emailSuccess = await sendEmails(reservation);
