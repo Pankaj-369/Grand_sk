@@ -29,6 +29,12 @@ const AdminDashboard = () => {
   }, [navigate]);
 
   const checkAuthAndLoadData = async () => {
+    if (!supabase) {
+      setError('Database not configured. Please add Supabase environment variables.');
+      setLoading(false);
+      return;
+    }
+
     try {
       // Check if user is authenticated
       const { data: { user } } = await supabase.auth.getUser();

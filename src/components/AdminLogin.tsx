@@ -19,20 +19,29 @@ const AdminLogin = () => {
     await new Promise(resolve => setTimeout(resolve, 800));
 
     try {
-      // Use Supabase authentication with admin credentials
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: 'niteshchhabra2001@gmail.com', // Admin email
-        password: 'admin123456' // This must match the password in your Supabase Auth dashboard
-      });
-
-      // Validate the frontend credentials separately
+      // Direct authentication with your preferred credentials
       if (credentials.username !== 'nitesh' || credentials.password !== 'chhabra5173') {
         setError('Invalid credentials. Please check your username and password.');
-      } else if (error || !data.user) {
-        setError('Authentication failed. Please contact the administrator to verify Supabase credentials.');
-        console.error('Supabase Auth Error:', error);
-        setError('Invalid credentials. Please check your username and password.');
       } else {
+        // Sign in with Supabase using your credentials as email
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: 'nitesh@grandsk.com',
+          password: 'chhabra5173'
+        });
+
+        if (error) {
+          console.error('Supabase Auth Error:', error);
+          setError('Authentication failed. Please contact the administrator.');
+        } else {
+          navigate('/admin/dashboard');
+        }
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('Login failed. Please try again.');
+    }
+    setIsLoading(false);
+  };
         navigate('/admin/dashboard');
       }
     } catch (error) {

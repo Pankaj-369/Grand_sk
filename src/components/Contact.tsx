@@ -39,6 +39,11 @@ const Contact = () => {
 
   // Save reservation to Supabase database
   const saveReservation = async (reservationData: ReservationData) => {
+    if (!supabase) {
+      console.warn('Supabase not configured, skipping database save');
+      return null;
+    }
+
     try {
       const { data, error } = await supabase
         .from('cafe_reservations')
