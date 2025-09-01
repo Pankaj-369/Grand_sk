@@ -3,8 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Coffee, Lock, User, Eye, EyeOff } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
+const ADMIN_EMAIL = 'niteshchhabra2001@gmail.com';
+
 const AdminLogin = () => {
-  const [credentials, setCredentials] = useState({ username: '', password: '' });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -15,41 +18,35 @@ const AdminLogin = () => {
     setIsLoading(true);
     setError('');
 
-    // Simulate loading for better UX
-    await new Promise(resolve => setTimeout(resolve, 800));
-
     try {
-      // Use Supabase authentication with admin credentials
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: 'niteshchhabra2001@gmail.com', // Admin email
-        password: credentials.username === 'nitesh' && credentials.password === 'chhabra5173' 
-          ? 'admin123456' // Secure admin password for Supabase
-          : 'invalid'
+        email,
+        password
       });
 
       if (error || !data.user) {
-        setError('Invalid credentials. Please check your username and password.');
-      } else {
-        navigate('/admin/dashboard');
+        setError('Invalid credentials.');
+        return;
       }
-    } catch (error) {
-      setError('Login failed. Please try again.');
-    }
-    setIsLoading(false);
-  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCredentials({
-      ...credentials,
-      [e.target.name]: e.target.value
-    });
-    setError(''); // Clear error when user types
+      // hard-gate to the single admin account
+      if (data.user.email?.toLowerCase() !== ADMIN_EMAIL) {
+        await supabase.auth.signOut();
+        setError('Unauthorized account.');
+        return;
+      }
+
+      navigate('/admin/dashboard');
+    } catch {
+      setError('Login failed. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-amber-50 to-gray-100 flex items-center justify-center py-24 px-4">
       <div className="max-w-md w-full">
-        {/* Logo Section */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center space-x-3 mb-4">
             <div className="relative">
@@ -62,72 +59,55 @@ const AdminLogin = () => {
               <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
                 The Grand SK
               </h1>
-              <p className="text-sm text-amber-600 font-medium tracking-wide">
-                ADMIN PORTAL
-              </p>
+              <p className="text-sm text-amber-600 font-medium tracking-wide">ADMIN PORTAL</p>
             </div>
           </div>
           <p className="text-gray-600">Access your management dashboard</p>
         </div>
 
-        {/* Login Form */}
         <div className="bg-white rounded-2xl shadow-2xl p-8 border border-gray-100">
           <div className="flex items-center justify-center mb-6">
             <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
               <Lock className="w-6 h-6 text-amber-600" />
             </div>
           </div>
-          
-          <h2 className="text-2xl font-bold text-gray-800 text-center mb-8">
-            Admin Login
-          </h2>
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm">
-              {error}
-            </div>
-          )}
+          <h2 className="text-2xl font-bold text-gray-800 text-center mb-8">Admin Login</h2>
+
+          {error && <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6 text-sm">{error}</div>}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
-                Username
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
-                  type="text"
-                  id="username"
-                  name="username"
-                  value={credentials.username}
-                  onChange={handleChange}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-300"
-                  placeholder="Enter username"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  placeholder="admin@example.com"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
                   type={showPassword ? 'text' : 'password'}
-                  id="password"
-                  name="password"
-                  value={credentials.password}
-                  onChange={handleChange}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-300"
-                  placeholder="Enter password"
+                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  placeholder="Your password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -137,34 +117,19 @@ const AdminLogin = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 disabled:from-amber-400 disabled:to-amber-500 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg disabled:transform-none disabled:cursor-not-allowed"
+              className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white py-3 px-6 rounded-lg font-semibold transition-all duration-300"
             >
-              {isLoading ? (
-                <div className="flex items-center justify-center space-x-2">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>Signing In...</span>
-                </div>
-              ) : (
-                'Sign In'
-              )}
+              {isLoading ? 'Signing In…' : 'Sign In'}
             </button>
           </form>
 
           <div className="mt-6 text-center">
-            <button
-              onClick={() => navigate('/')}
-              className="text-amber-600 hover:text-amber-700 font-medium transition-colors duration-300"
-            >
-              ← Back to Website
-            </button>
+            <button onClick={() => navigate('/')} className="text-amber-600 hover:text-amber-700 font-medium">← Back to Website</button>
           </div>
         </div>
 
-        {/* Security Notice */}
         <div className="mt-6 text-center">
-          <p className="text-xs text-gray-500">
-            🔒 Secure admin access for The Grand SK management
-          </p>
+          <p className="text-xs text-gray-500">🔒 Secure admin access for The Grand SK management</p>
         </div>
       </div>
     </div>
