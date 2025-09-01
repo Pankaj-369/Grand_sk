@@ -22,12 +22,15 @@ const AdminLogin = () => {
       // Use Supabase authentication with admin credentials
       const { data, error } = await supabase.auth.signInWithPassword({
         email: 'niteshchhabra2001@gmail.com', // Admin email
-        password: credentials.username === 'nitesh' && credentials.password === 'chhabra5173' 
-          ? 'admin123456' // Secure admin password for Supabase
-          : 'invalid'
+        password: 'admin123456' // This must match the password in your Supabase Auth dashboard
       });
 
-      if (error || !data.user) {
+      // Validate the frontend credentials separately
+      if (credentials.username !== 'nitesh' || credentials.password !== 'chhabra5173') {
+        setError('Invalid credentials. Please check your username and password.');
+      } else if (error || !data.user) {
+        setError('Authentication failed. Please contact the administrator to verify Supabase credentials.');
+        console.error('Supabase Auth Error:', error);
         setError('Invalid credentials. Please check your username and password.');
       } else {
         navigate('/admin/dashboard');

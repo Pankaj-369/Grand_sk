@@ -12,6 +12,25 @@
 
 *Note: This is the Supabase authentication account that powers the admin login system.*
 
+## ⚠️ IMPORTANT: Supabase Setup Required
+
+If you're getting authentication errors, you need to:
+
+1. **Go to your Supabase Dashboard** → Authentication → Users
+2. **Check if user exists**: Look for `niteshchhabra2001@gmail.com`
+3. **If user doesn't exist**: 
+   - Click "Add user" 
+   - Email: `niteshchhabra2001@gmail.com`
+   - Password: `admin123456`
+   - Confirm password: `admin123456`
+   - Click "Create user"
+4. **If user exists but password is wrong**:
+   - Click on the user
+   - Click "Reset password"
+   - Set new password to: `admin123456`
+
+The frontend login (nitesh/chhabra5173) is separate from Supabase auth for security.
+
 ## Access Instructions
 
 1. Navigate to `/admin` route on the website
