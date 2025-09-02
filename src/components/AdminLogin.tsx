@@ -32,7 +32,7 @@ const AdminLogin = () => {
       // hard-gate to the single admin account
       if (data.user.email?.toLowerCase() !== ADMIN_EMAIL) {
         await supabase.auth.signOut();
-        setError('Unauthorized account.');
+        setError('Unauthorized account please try again.');
         return;
       }
 
